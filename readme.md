@@ -3,3 +3,6 @@
 
 ## Add your environment variable 
  cp  .env.example .env
+
+ ## Run the FastAPi server
+ uvicorn main:app --reload host 0.0.0.0
