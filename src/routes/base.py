@@ -1,16 +1,18 @@
-from fastapi import APIRouter,FastAPI
+from fastapi import APIRouter,FastAPI,Depends
 import os
+from helpers.config import get_settings ,Settings
 
-
-router = APIRouter(
+base_router = APIRouter(
     prefix="/api/v1",
 )
 
-@router.get("/Health")
-async def start():
-    app_name = os.getenv("APP_Name")
-    app_version = os.getenv("APP_Version")
+@base_router.get("/Health")
+async def start(app_setting: Settings =Depends(get_settings)):
+    
+    app_name = app_setting.APP_Name
+    app_version = app_setting.APP_Version
+
     return {
    "app_name": app_name,
-   "app_version": app_version,
+   "app_version": app_version
 }
