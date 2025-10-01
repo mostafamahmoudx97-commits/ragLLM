@@ -18,3 +18,5 @@ export PS1="\[\033[01;32m\]\u@\h:\w\n\[\033[00m\]\$ "
 
 ## Run Dockeer compose service up
 copy .env.example to .env and add you values
+
+command-a-03-2025

@@ -2,16 +2,16 @@ from ..LLMInterface import LLMInterface
 from openai import OpenAI
 from ..LLMEnums import OPENAIEnums
 import logging
-class OPENAIProvide(LLMInterface):
+class OPENAIProvider(LLMInterface):
     
-    def __init__(self, api_key: str, api_url: str=None,
+    def __init__(self, api_key: str,api_url:str,
                  default_input_max_characters :int=1000,
-                 default_generation_max_ouput_tokens: int=1000,
+                 default_generation_max_output_tokens: int=1000,
                  default_generation_temperature:float=0.1):
         self.api_key=api_key
         self.api_url=api_url
         self.default_input_max_characters=default_input_max_characters
-        self.default_generation_max_ouput_tokens=default_generation_max_ouput_tokens
+        self.default_generation_max_ouput_tokens=default_generation_max_output_tokens
         self.default_generation_temperature=default_generation_temperature
 
         self.generation_model_id=None
@@ -20,9 +20,10 @@ class OPENAIProvide(LLMInterface):
 
         self.client=OpenAI(
             api_key =self.api_key,
-            api_url =self.api_url
+             base_url =self.api_url
         )
         self.logger=logging.getLogger(__name__)
+        self.enums=OPENAIEnums
 
 
     def set_generation_model(self, model_id:str):
@@ -36,7 +37,7 @@ class OPENAIProvide(LLMInterface):
 
 
     def process_text(self, text:str):
-       return text[self.default_input_max_characters].strip()
+       return text[:self.default_input_max_characters].strip()
 
 
 
@@ -45,12 +46,14 @@ class OPENAIProvide(LLMInterface):
          if not self.client:
           self.logger.error("OPENAI clinet was not set")
           return None
+         
          if not self.generation_model_id:
             self.logger.error("generation model for OPENAI was not set")
             return None
          
          max_output_tokens=max_output_tokens if max_output_tokens else self.default_generation_max_ouput_tokens
          temperature=temperature if temperature else self.default_generation_temperature
+        
          chat_history.append(
             self.construct_prompt(prompt=prompt,role=OPENAIEnums.USER.value)
          )
@@ -66,7 +69,7 @@ class OPENAIProvide(LLMInterface):
             self.logger.error("error while generate text with openAI")
             return None
          
-         return response.choices[0].message["content"]
+         return response.choices[0].message.content
 
     def embed_text(self, text:str, document_type: str= None):
        if not self.client:
@@ -96,6 +99,4 @@ class OPENAIProvide(LLMInterface):
           "role":role,
           "content":self.process_text(prompt)
        }
-
-
-       
+    
