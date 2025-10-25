@@ -2,6 +2,7 @@ from ..LLMInterface import LLMInterface
 from ..LLMEnums import COHEREENUMS, DOCUMENTTYPEENUM
 import cohere 
 import logging
+from typing import List,Union
 class COHEREProvide(LLMInterface):
 
     def __init__(self, api_key: str ,default_input_max_characters :int=1000,
@@ -64,12 +65,17 @@ class COHEREProvide(LLMInterface):
        return response.text
     
 
-    def embed_text(self, text:str, document_type: str= None):
+    def embed_text(self, text:Union[str,List[str]], document_type: str= None):
       
            
        if not self.client:
           self.logger.error("COHERE clinet was not set")
           return None
+       
+
+       if isinstance(text,str):
+          text=[text]
+
          
        if not self.embedding_model_id:
            self.logger.error("embedding model for COHERE was not set")
@@ -80,7 +86,7 @@ class COHEREProvide(LLMInterface):
         input_type=COHEREENUMS.QUERY
        
        response = self.client.embed(
-           texts= [self.process_text(text)],
+           texts= [ self.process_text(t) for t in text],
            model=self.embedding_model_id,
            input_type=input_type,
            embedding_types=["float"]
@@ -89,8 +95,8 @@ class COHEREProvide(LLMInterface):
        if not response or not response.embeddings or not response.embeddings.float_:
           self.logger.error("error while embedding text with cohere")
           return None
-    
-       return response.embeddings.float_[0] 
+       return [f for f in response.embeddings.float ] 
+
        
 
 
