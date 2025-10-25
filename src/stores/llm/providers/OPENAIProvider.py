@@ -2,6 +2,7 @@ from ..LLMInterface import LLMInterface
 from openai import OpenAI
 from ..LLMEnums import OPENAIEnums
 import logging
+from typing import List,Union
 class OPENAIProvider(LLMInterface):
     
     def __init__(self, api_key: str,api_url:str,
@@ -71,10 +72,14 @@ class OPENAIProvider(LLMInterface):
          
          return response.choices[0].message.content
 
-    def embed_text(self, text:str, document_type: str= None):
+    def embed_text(self, text:Union[str,List[str]], document_type: str= None):
        if not self.client:
           self.logger.error("OPENAI clinet was not set")
           return None
+       
+       if isinstance(text,str):
+          text=[text]
+
        if not self.embedding_model_id:
           self.logger.error("embedding model for OPENAI was not set")
           return None
@@ -90,7 +95,8 @@ class OPENAIProvider(LLMInterface):
         
          return None
 
-       return response.data[0].embedding 
+      #  print(response)
+       return [d.embedding for d in response.data]    
     
     def construct_prompt(self, prompt:str, role:str,):
        

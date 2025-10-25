@@ -20,8 +20,10 @@ export PS1="\[\033[01;32m\]\u@\h:\w\n\[\033[00m\]\$ "
 
 ## for macOS
 
+conda activate mini-rag-app-py311
+
 export PROMPT='%F{green}%n@%m:%~%f
-%# '
+$ '
 
 ## Run Dockeer compose service up
 
