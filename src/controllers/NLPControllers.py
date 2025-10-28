@@ -45,7 +45,7 @@ class NLPControllers(BaseControllers):
         vectors =self.embedding_client.embed_text(text=texts,document_type=DOCUMENTTYPEENUM.DOCUMENT.value)
         
     
-  
+
       #create the collection if it does not exist
         _=await self.vectordb_client.create_collection(collection_name=collection_name, 
          embedding_size=self.embedding_client.embedding_size,  
